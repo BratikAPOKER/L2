@@ -1,0 +1,137 @@
+class Student:
+    def __init__(self, name, email):
+        self.name = name
+        self.email = email
+        self.faculty = None
+
+    def assign_to_faculty(self, faculty):
+        self.faculty = faculty
+
+    def graduate(self):
+        self.faculty = None
+
+    def __str__(self):
+        return f"Name: {self.name}, Email: {self.email}, Faculty: {self.faculty}"
+
+
+class Faculty:
+    def __init__(self, name):
+        self.name = name
+        self.students = set()
+
+    def enroll_student(self, student):
+        self.students.add(student)
+
+    def graduate_student(self, student):
+        self.students.remove(student)
+
+
+class University:
+    def __init__(self):
+        self.faculties = {}
+        self.students = set()
+
+    def create_faculty(self, name):
+        if name not in self.faculties:
+            self.faculties[name] = Faculty(name)
+            print(f"Faculty '{name}' created successfully.")
+        else:
+            print(f"Faculty '{name}' already exists.")
+
+    def enroll_student(self, name, email):
+        student = Student(name, email)
+        self.students.add(student)
+        print(f"Student '{name}' enrolled successfully.")
+
+    def assign_student_to_faculty(self, student_name, faculty_name):
+        student = next((s for s in self.students if s.name == student_name), None)
+        faculty = self.faculties.get(faculty_name, None)
+        if student and faculty:
+            student.assign_to_faculty(faculty)
+            faculty.enroll_student(student)
+            print(f"Student '{student_name}' assigned to faculty '{faculty_name}' successfully.")
+        else:
+            print("Student or faculty not found.")
+
+    def graduate_student(self, student_name):
+        student = next((s for s in self.students if s.name == student_name), None)
+        if student:
+            student.graduate()
+            print(f"Student '{student_name}' graduated successfully.")
+        else:
+            print("Student not found.")
+
+    def display_enrolled_students(self):
+        if self.students:
+            print("\nEnrolled Students:")
+            for student in self.students:
+                if student.faculty:
+                    print(student)
+        else:
+            print("No students enrolled yet.")
+
+    def display_graduates(self):
+        if self.students:
+            print("\nGraduates:")
+            for student in self.students:
+                if not student.faculty:
+                    print(student)
+        else:
+            print("No students enrolled yet.")
+
+
+def main():
+    tum = University()
+
+    while True:
+        print("\nTUM Student Management System")
+        print("1. Enroll a student")
+        print("2. Create a faculty")
+        print("3. Assign a student to a faculty")
+        print("4. Graduate a student")
+        print("5. Display enrolled students")
+        print("6. Display graduates")
+        print("7. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            name = input("Enter student name: ")
+            email = input("Enter student email: ")
+            tum.enroll_student(name, email)
+
+        elif choice == "2":
+            name = input("Enter faculty name: ")
+            tum.create_faculty(name)
+
+        elif choice == "3":
+            if not tum.students:
+                print("No students enrolled yet.")
+                continue
+            student_name = input("Enter student name: ")
+            faculty_name = input("Enter faculty name: ")
+            tum.assign_student_to_faculty(student_name, faculty_name)
+
+        elif choice == "4":
+            if not tum.students:
+                print("No students enrolled yet.")
+                continue
+            student_name = input("Enter student name to graduate: ")
+            tum.graduate_student(student_name)
+
+        elif choice == "5":
+            tum.display_enrolled_students()
+
+        elif choice == "6":
+            tum.display_graduates()
+
+        elif choice == "7":
+            print("Exiting...")
+            break
+
+        else:
+            print("Invalid choice. Please try again.")
+
+
+if __name__ == "__main__":
+    main()
